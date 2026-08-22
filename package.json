@@ -4,6 +4,14 @@
   "description": "Portable Agent Plugins, Agent Skills, and host adapters.",
   "private": true,
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vincentxuu/agent-toolkit.git"
+  },
+  "homepage": "https://github.com/vincentxuu/agent-toolkit#readme",
+  "bugs": {
+    "url": "https://github.com/vincentxuu/agent-toolkit/issues"
+  },
   "type": "module",
   "bin": {
     "agent-toolkit": "./bin/agent-toolkit.mjs"

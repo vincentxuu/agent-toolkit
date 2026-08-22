@@ -1,0 +1,5 @@
+.github/
+.research/
+.work/
+dist/
+.DS_Store

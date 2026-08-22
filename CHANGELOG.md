@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file. The project
 
 ### Changed
 
+- Reworked the README into a public project landing page with a GitHub-based quick start, workflow examples, an explicit support matrix, CLI reference, and contributor guidance.
 - Deep Research now hands article drafts or existing-article refreshes to `manage-post` when that skill is installed.
 - Hardened plugin packaging and skill installation against path traversal.
 - Declared MIT in repository and portable plugin metadata.

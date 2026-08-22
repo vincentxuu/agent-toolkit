@@ -1,126 +1,252 @@
 # Agent Toolkit
 
-A portable home for reusable Agent Plugins, Agent Skills, MCP declarations, and thin host adapters.
+[![CI](https://github.com/vincentxuu/agent-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/vincentxuu/agent-toolkit/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-339933?logo=node.js&logoColor=white)](package.json)
 
-Status: early-stage and usable for local development. Public releases follow Semantic Versioning and the process in [`RELEASING.md`](RELEASING.md).
+Reusable research and writing workflows for coding agents and Web agents.
 
-## Layout
+Agent Toolkit keeps each workflow as a portable [Agent Skill](https://agentskills.io/) and packages thin compatibility layers for Agent Plugins, Codex, and Claude Code. Write the workflow once; install it wherever you need it.
+
+> **Project status:** early-stage and ready for local use. The npm package has not been published yet, so the examples below run directly from GitHub.
+
+**Plugin** means a distributable bundle, **skill** means the reusable instructions an agent follows, and **adapter** means host-specific metadata around the same canonical skill.
+
+- [Quick start](#quick-start)
+- [Available workflows](#available-workflows)
+- [Installation](#installation)
+- [Compatibility](#compatibility)
+- [CLI reference](#cli-reference)
+- [Development](#development)
+
+## Quick start
+
+You need Git, Node.js 20 or newer, and an agent that can discover project-level Agent Skills. Open the project where you want the skill, then run:
+
+```bash
+npx --yes github:vincentxuu/agent-toolkit add manage-post
+```
+
+You should see output similar to:
+
+```text
+Installed <your-project>/.agents/skills/manage-post
+Start a new agent session to load the skill.
+```
+
+Restart your agent, then try a read-only first task:
+
+```text
+Use manage-post to verify README.md without changing it.
+```
+
+The expected result is a verification report describing the checks that were available; `README.md` should remain unchanged.
+
+To try research instead:
+
+```bash
+npx --yes github:vincentxuu/agent-toolkit add deep-research
+```
+
+```text
+Use deep-research to compare the architecture of Codex, Claude Code, and OpenCode.
+```
+
+The installer copies files into the current project and refuses to overwrite different existing content.
+
+### Before granting write access
+
+Skills run with the permissions of the host agent:
+
+- `deep-research` may call external research services and, in filesystem environments, write a note under `.research/`.
+- `manage-post` stays read-only for verification requests but may create or edit content when the prompt authorizes it.
+- Neither skill treats content editing as permission to commit, push, deploy, or publish.
+- MCP endpoints and credentials remain under the host client's control and are never bundled here.
+
+## Available workflows
+
+| Plugin | Skill | What it does |
+|---|---|---|
+| `deep-research` | `deep-research` | Plans research questions, gathers and cross-checks sources, records evidence quality, and produces a structured research note. Works with local or remote Groundlane MCP and available fallback research tools. |
+| `content-authoring` | `manage-post` | Creates, updates, or verifies Markdown articles through one entry point. Uses portable writing rules by default and automatically adds Quidproquo-specific schema, bilingual, glossary, and validation rules when that repository is targeted. |
+
+`manage-post` is intentionally one lifecycle skill—not separate create, update, and verify skills. It infers the operation from your request and respects the target repository's own instructions and validation commands.
+
+Examples:
+
+```text
+Use manage-post to create an article from these incident notes.
+Use manage-post to update docs/posts/retry-design.md with the current API behavior.
+Use manage-post to verify this article and report problems without editing it.
+```
+
+`deep-research` needs at least one search/fetch capability in the current agent. Groundlane is optional. When no network research tool exists, the skill works from supplied materials or reports the blocker rather than pretending it verified external claims. Its detailed workflow is currently authored primarily in Traditional Chinese.
+
+## Installation
+
+### Shared Agent Skills directory
+
+The default installs into `.agents/skills` in the current project:
+
+```bash
+npx --yes github:vincentxuu/agent-toolkit add deep-research
+```
+
+Use `--global` to install for your user account instead:
+
+```bash
+npx --yes github:vincentxuu/agent-toolkit add deep-research --global
+```
+
+### Claude Code
+
+Install into the current project's `.claude/skills` directory:
+
+```bash
+npx --yes github:vincentxuu/agent-toolkit add manage-post --claude
+```
+
+Use `--all` when a project should expose the skill through both `.agents/skills` and `.claude/skills`:
+
+```bash
+npx --yes github:vincentxuu/agent-toolkit add manage-post --all
+```
+
+### Contributor checkout
+
+Clone the repository when you want to modify skills or build plugin artifacts:
+
+```bash
+git clone https://github.com/vincentxuu/agent-toolkit.git
+cd agent-toolkit
+npm test
+node bin/agent-toolkit.mjs list
+```
+
+Use `--link` only while developing locally. Normal installs copy the skill so they do not break when this checkout moves.
+
+## Compatibility
+
+The shared skill is the portability layer. Plugin manifests and discovery paths are host-specific.
+
+| Target | Support | Distribution |
+|---|---:|---|
+| Agent Plugins v1 clients | ✅ | `plugins/<plugin>/` or `dist/standard/<plugin>/` |
+| Codex | ✅ | `.agents/skills` or generated Codex plugin |
+| Claude Code | ✅ | `.claude/skills` or generated Claude plugin |
+| Other Agent Skills clients | ◐ | Canonical skill, when the client supports a compatible discovery/import path |
+| Web agents with skill upload | ◐ | Self-contained `dist/web/.../skills/<skill>/` artifact |
+| Web agents without skill/plugin import | — | Use that platform's native instructions and tools |
+| Gemini CLI adapter | — | Intentionally not maintained |
+
+`✅` means this repository provides a tested installation or package path. `◐` depends on capabilities exposed by the host. A Web agent cannot access a local checkout or `localhost` unless its platform explicitly provides that connection.
+
+## CLI reference
+
+```text
+agent-toolkit add <skill>              Install into .agents/skills in the current project
+agent-toolkit add <skill> --claude     Install into .claude/skills
+agent-toolkit add <skill> --all        Install into both discovery directories
+agent-toolkit add <skill> --global     Install for the current user
+agent-toolkit add <skill> --link       Link instead of copy for local development
+agent-toolkit list                     List available plugins and skills
+agent-toolkit doctor                   Run the full validation suite
+agent-toolkit pack <plugin>            Build every supported package variant
+```
+
+Run `npx --yes github:vincentxuu/agent-toolkit help` for the current built-in help. Advanced callers may use `--project <directory>` or `--agent shared|claude|all`.
+
+### Updating or removing a skill
+
+Copied installs are snapshots. Re-running `add` is a no-op when the installed files are identical; if they differ, the CLI refuses to overwrite them so local edits cannot be lost silently.
+
+There is no automated `update` or `remove` command yet. To upgrade, review any local changes, remove only that skill's installed directory, and run `add` again. To uninstall, remove only `.agents/skills/<skill>` and/or `.claude/skills/<skill>` from the chosen scope.
+
+### Troubleshooting
+
+| Problem | What to check |
+|---|---|
+| The agent cannot find the skill | Confirm the skill exists under the client's discovery directory, then start a new agent session. |
+| `Destination differs; refusing to overwrite` | The installed copy differs from the toolkit. Review it before manually replacing or removing it. |
+| Research cannot access the Web | Confirm the current agent exposes a search/fetch tool or a configured Groundlane MCP connection. |
+| A Web agent cannot import the artifact | The host must support skill or plugin upload; a local installation cannot make files visible to a hosted agent. |
+| You are unsure where files went | Project installs use the current working directory; user installs use the current user's home directory. Run without `--global` for repository-local behavior. |
+
+## Build plugin packages
+
+Installing a skill and building a plugin package are different workflows. Most users only need `add`; maintainers and plugin distributors use `pack` from a contributor checkout:
+
+```bash
+node bin/agent-toolkit.mjs pack deep-research
+node bin/agent-toolkit.mjs pack content-authoring
+```
+
+Artifacts are written to `dist/<host>/<plugin>/`:
+
+- `standard` — Agent Plugins v1 package
+- `codex` — Codex-native manifest and canonical skills
+- `claude` — Claude Code manifest and canonical skills
+- `web` — self-contained skills without a CLI-specific manifest
+
+Generated packages include the MIT license and checksums. Credentials are never bundled.
+
+## Groundlane and secrets
+
+`deep-research` can use a local or remote [Groundlane](https://github.com/vincentxuu/groundlane) MCP connection when the current agent exposes it. This repository does not embed an authenticated MCP endpoint or bearer token.
+
+- Desktop agents may connect to an already configured local or remote Groundlane server.
+- Web-hosted agents require a publicly reachable HTTPS MCP endpoint registered through the platform.
+- When Groundlane is unavailable, the skill uses research tools that are actually present and reports the fallback.
+
+Store credentials in each host's secret-backed MCP settings. Never commit tokens to a plugin manifest or skill.
+
+## How the repository is organized
 
 ```text
 plugins/
   deep-research/
-    plugin.json                 # Agent Plugins v1 manifest
-    skills/deep-research/       # canonical Agent Skill
+    plugin.json                 # portable Agent Plugins manifest
+    skills/deep-research/       # canonical skill and references
   content-authoring/
     plugin.json
-    skills/manage-post/         # create, update, verify + Quidproquo rules
+    skills/manage-post/         # canonical article lifecycle skill
 adapters/
-  codex/deep-research/          # Codex-native compatibility layer
-  claude/deep-research/         # Claude Code compatibility layer
-scripts/
-  link-skill.mjs                # local user/project installer
-  package-host.mjs              # assemble a host-native artifact
-  validate.mjs                  # repository validation
+  codex/                        # metadata-only Codex wrappers
+  claude/                       # metadata-only Claude Code wrappers
+bin/agent-toolkit.mjs           # user-facing CLI
+scripts/                        # validation, packaging, and tests
 ```
 
-Agent Plugins v1 clients consume `plugin.json` and `skills/` directly. Clients that only implement Agent Skills can install the same canonical skill through their normal discovery directory. Host adapters contain metadata only; they do not fork `SKILL.md`.
+Canonical skill content exists only under `plugins/<plugin>/skills/`. Adapters must not fork or duplicate `SKILL.md`.
 
-## Compatibility model
+### Non-goals
 
-| Client type | Distribution |
-|---|---|
-| Agent Plugins v1 client | Use `plugins/<plugin>/` or the generated `dist/standard/<plugin>/` package |
-| Codex native plugin flow | Generate `dist/codex/<plugin>/` |
-| Claude Code plugin flow | Generate `dist/claude/<plugin>/` |
-| Agent Skills-only client | Link or copy the canonical skill into a supported skills discovery directory |
-| Web agent with Skill upload | Import or zip the self-contained directory under `dist/web/<plugin>/skills/<skill>/` as that host requires |
-| Web agent without Skill support | Use a platform-specific instructions wrapper; do not claim native plugin support |
+Agent Toolkit is not currently a general-purpose package manager, hosted MCP service, credential store, or promise that every agent host implements the same plugin features. It provides canonical workflows plus tested package shapes; each host still controls discovery, permissions, tools, and authentication.
 
-Client support changes independently of this repository. The portable Agent Plugins package remains the source contract; adapters exist only for clients that still require native metadata.
+## Development
 
-Host-specific files live outside the portable plugin root. Build an installable compatibility artifact only when a native wrapper is required:
-
-```bash
-npm run package -- deep-research codex
-npm run package -- deep-research claude
-npm run package -- content-authoring codex
-npm run package -- content-authoring web
-```
-
-Artifacts are written under `dist/<host>/<plugin>/`.
-
-Generated packages include the MIT license, canonical skills, and the relevant host manifest where applicable. Web artifacts contain the self-contained canonical skill without a CLI-specific manifest. `npm test` also writes `dist/SHA256SUMS` for artifact verification. Gemini CLI is intentionally outside the supported adapter matrix.
-
-## Validate
-
-Requires Node.js 20 or newer.
+Requires Node.js 20 or newer and has no runtime dependencies.
 
 ```bash
 npm test
 ```
 
-The full suite validates manifests and skills, assembles every supported host package, checks required artifact files, and smoke-tests link and copy installation paths. CI runs it on Node.js 20, 22, and 24 across Linux, macOS, and Windows.
+The test suite validates plugin and skill metadata, checks version consistency, packages all supported targets, verifies artifact contents and checksums, and exercises copy/link installation paths. CI runs on Node.js 20, 22, and 24 across Linux, macOS, and Windows.
 
-## Use the CLI
-
-Install a skill into the current project. Copy is the safe default:
+Before adding a plugin or changing release metadata, read [CONTRIBUTING.md](CONTRIBUTING.md) and [RELEASING.md](RELEASING.md). All plugins currently use lockstep repository versioning through:
 
 ```bash
-node bin/agent-toolkit.mjs add deep-research
-node bin/agent-toolkit.mjs add manage-post
+npm run set-version -- <semver>
 ```
 
-Use `--claude` for Claude Code, `--all` for both shared and Claude discovery paths, or `--global` for a user-level install:
+## Community and security
 
-```bash
-node bin/agent-toolkit.mjs add manage-post --claude
-node bin/agent-toolkit.mjs add manage-post --all
-node bin/agent-toolkit.mjs add manage-post --global
-```
-
-From another working directory, pass an explicit project root:
-
-```bash
-node bin/agent-toolkit.mjs add manage-post --project /path/to/project
-```
-
-The installer refuses to overwrite a differing destination. Add `--link` only for local contributor development; copied installs are portable and do not depend on this checkout remaining in place. Start a new agent session after installation so the client reloads skills.
-
-Once the package is published, the same interface can be invoked through its package runner. Until then, use the checked-out CLI shown above.
-
-## Included plugins
-
-| Plugin | Skill | Behavior |
-|---|---|---|
-| `deep-research` | `deep-research` | Evidence-first multi-source research with local and Web tool routing |
-| `content-authoring` | `manage-post` | Create, update, or verify Markdown articles; auto-loads Quidproquo rules only for that target |
-
-`manage-post` is one lifecycle skill with explicit create, update, and verify routing. Shared evidence, safety, and authority rules remain canonical; site-specific paths, schema, language behavior, glossary, and validation load only for Quidproquo.
-
-Typical invocations:
-
-```text
-Use $manage-post to create an article from these notes.
-Use $manage-post to update the article at <path> with current API behavior.
-Use $manage-post to verify this article without changing it.
-```
-
-Coding-agent and Web-agent support are separate dimensions. Codex and Claude Code receive native wrappers; Agent Plugins/Agent Skills clients consume the standard source; Web agents receive the same self-contained skill and use its no-filesystem output branch. A Web product is supported only when it can actually import that skill or plugin format.
-
-## Groundlane connection
-
-The `deep-research` skill supports either a local or remote Groundlane MCP connection, but this repository intentionally does not ship a portable `mcp.json` yet. Agent Plugins v1 does not define portable secret references for authenticated HTTP headers, and credentials must never be embedded in a plugin.
-
-Configure the Groundlane endpoint and bearer credential in each client's secret-backed MCP settings. A Web-hosted agent requires a publicly reachable HTTPS endpoint; it cannot connect to a user's localhost. If Groundlane later supports MCP OAuth, the plugin can add a portable `mcp.json` without shipping secrets.
-
-## Adding another plugin
-
-Create `plugins/<plugin-name>/plugin.json`, place canonical skills under `plugins/<plugin-name>/skills/`, and add host adapters only where the host does not yet consume Agent Plugins v1 directly. Keep scripts, references, and assets beside their owning skill.
-
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request. Report sensitive issues according to [`SECURITY.md`](SECURITY.md), and follow the [`Code of Conduct`](CODE_OF_CONDUCT.md) in project spaces.
-
-All plugins currently use lockstep repository versioning. Use `npm run set-version -- <semver>` rather than editing manifest versions independently.
+- Bugs and feature requests: [GitHub Issues](https://github.com/vincentxuu/agent-toolkit/issues)
+- Contribution guide: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Security policy: [SECURITY.md](SECURITY.md)
+- Code of Conduct: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+- Changes: [CHANGELOG.md](CHANGELOG.md)
 
 ## License
 
-MIT. See [`LICENSE`](LICENSE).
+[MIT](LICENSE)
