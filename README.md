@@ -10,6 +10,8 @@
 
 [Quick start](#quick-start) · [Plugins](#plugins-at-a-glance) · [Installation](#installation) · [Compatibility](#compatibility) · [CLI](#cli-reference) · [Docs](#how-the-repository-is-organized)
 
+[English](README.md) · [繁體中文](README.zh-TW.md)
+
 </div>
 
 Agent Toolkit keeps each workflow as a portable [Agent Skill](https://agentskills.io/) and packages thin compatibility layers for Agent Plugins, Codex, and Claude Code. Write the workflow once; install it wherever you need it.
