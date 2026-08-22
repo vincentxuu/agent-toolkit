@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spec-Driven Development"
+  short_description: "Deliver features with specs and recorded browser proof."
+  default_prompt: "Use $develop-with-spec to define, implement, and verify this change with Playwright video evidence."

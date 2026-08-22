@@ -32,8 +32,8 @@ const packagedHosts = new Map();
 for (const pluginName of pluginNames) {
   const hosts = ['standard', 'web'];
   for (const host of Object.keys(adapterManifest)) {
-    const adapterRoot = join(root, 'adapters', host, pluginName);
-    if (await access(adapterRoot).then(() => true, () => false)) hosts.push(host);
+    const nativeManifest = join(root, 'plugins', pluginName, adapterManifest[host]);
+    if (await access(nativeManifest).then(() => true, () => false)) hosts.push(host);
   }
   packagedHosts.set(pluginName, hosts);
   for (const host of hosts) run('package-host.mjs', [pluginName, host]);
@@ -41,6 +41,7 @@ for (const pluginName of pluginNames) {
 run('test-installers.mjs');
 run('test-cli.mjs');
 run('test-content-authoring.mjs');
+run('test-software-delivery.mjs');
 run('test-rejections.mjs');
 
 async function filesUnder(path) {

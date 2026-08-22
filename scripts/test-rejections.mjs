@@ -36,7 +36,7 @@ try {
 
   const fixture = join(temporaryRoot, 'fixture');
   await mkdir(fixture, { recursive: true });
-  for (const name of ['plugins', 'adapters']) await cp(join(root, name), join(fixture, name), { recursive: true });
+  for (const name of ['plugins', '.agents', '.claude-plugin']) await cp(join(root, name), join(fixture, name), { recursive: true });
   for (const name of ['package.json', 'LICENSE']) await cp(join(root, name), join(fixture, name));
 
   const versionResult = invoke('set-version.mjs', ['1.2.3', '--root', fixture]);
@@ -47,7 +47,7 @@ try {
     throw new Error('portable manifest version was not updated');
   }
 
-  const adapterPath = join(fixture, 'adapters', 'claude', 'deep-research', '.claude-plugin', 'plugin.json');
+  const adapterPath = join(fixture, 'plugins', 'deep-research', '.claude-plugin', 'plugin.json');
   const adapter = JSON.parse(await readFile(adapterPath, 'utf8'));
   adapter.version = '9.9.9';
   await writeFile(adapterPath, `${JSON.stringify(adapter, null, 2)}\n`);

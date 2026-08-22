@@ -72,8 +72,8 @@ for (const pluginName of pluginDirs) {
   }
 
   for (const adapterPath of [
-    join(root, 'adapters', 'codex', pluginName, '.codex-plugin', 'plugin.json'),
-    join(root, 'adapters', 'claude', pluginName, '.claude-plugin', 'plugin.json'),
+    join(pluginRoot, '.codex-plugin', 'plugin.json'),
+    join(pluginRoot, '.claude-plugin', 'plugin.json'),
   ]) {
     if (!(await exists(adapterPath))) continue;
     const adapter = await json(adapterPath);
@@ -120,8 +120,40 @@ for (const pluginName of pluginDirs) {
   }
 }
 
+const codexMarketplace = await json(join(root, '.agents', 'plugins', 'marketplace.json'));
+if (codexMarketplace) {
+  if (codexMarketplace.name !== 'agent-toolkit') errors.push('Codex marketplace name must be agent-toolkit');
+  const entries = Array.isArray(codexMarketplace.plugins) ? codexMarketplace.plugins : [];
+  for (const pluginName of pluginDirs) {
+    const entry = entries.find((candidate) => candidate.name === pluginName);
+    if (!entry) {
+      errors.push(`Codex marketplace: missing ${pluginName}`);
+      continue;
+    }
+    if (entry.source?.source !== 'local' || entry.source?.path !== `./plugins/${pluginName}`) errors.push(`Codex marketplace: invalid source for ${pluginName}`);
+    if (!['AVAILABLE', 'INSTALLED_BY_DEFAULT', 'NOT_AVAILABLE'].includes(entry.policy?.installation)) errors.push(`Codex marketplace: invalid installation policy for ${pluginName}`);
+    if (!['ON_INSTALL', 'ON_USE'].includes(entry.policy?.authentication)) errors.push(`Codex marketplace: invalid authentication policy for ${pluginName}`);
+    if (!entry.category) errors.push(`Codex marketplace: category is required for ${pluginName}`);
+  }
+}
 
-for (const scanRoot of [join(root, 'plugins'), join(root, 'adapters')]) {
+const claudeMarketplace = await json(join(root, '.claude-plugin', 'marketplace.json'));
+if (claudeMarketplace) {
+  if (claudeMarketplace.name !== 'agent-toolkit') errors.push('Claude marketplace name must be agent-toolkit');
+  const entries = Array.isArray(claudeMarketplace.plugins) ? claudeMarketplace.plugins : [];
+  for (const pluginName of pluginDirs) {
+    const entry = entries.find((candidate) => candidate.name === pluginName);
+    if (!entry) {
+      errors.push(`Claude marketplace: missing ${pluginName}`);
+      continue;
+    }
+    if (entry.source !== `./plugins/${pluginName}`) errors.push(`Claude marketplace: invalid source for ${pluginName}`);
+    if (entry.version !== rootPackage?.version) errors.push(`Claude marketplace: version must match package for ${pluginName}`);
+  }
+}
+
+
+for (const scanRoot of [join(root, 'plugins'), join(root, '.agents'), join(root, '.claude-plugin')]) {
   for (const path of await filesUnder(scanRoot)) {
     const content = await readFile(path, 'utf8').catch(() => '');
     if (/\/Users\/(?!<)[A-Za-z0-9._-]+\//.test(content) || /\/home\/(?!<)[A-Za-z0-9._-]+\//.test(content) || /[A-Za-z]:\\Users\\(?!<)[^\\\s]+\\/.test(content)) {

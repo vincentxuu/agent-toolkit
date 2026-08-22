@@ -21,15 +21,15 @@ There are currently no runtime npm dependencies.
 
 - Put portable plugins under `plugins/<plugin-name>/`.
 - Put canonical skills under `plugins/<plugin-name>/skills/<skill-name>/`.
-- Put native host metadata under `adapters/<host>/<plugin-name>/`.
-- Do not copy or fork `SKILL.md` into an adapter.
+- Put native host metadata under `plugins/<plugin-name>/.codex-plugin/` and `plugins/<plugin-name>/.claude-plugin/` beside the canonical skills.
+- Do not copy or fork `SKILL.md` into a host-specific package.
 - Do not commit credentials, private endpoints, expanded authorization headers, personal paths, generated `dist/`, or `.research/` notes.
 - Keep plugin and adapter versions synchronized.
 
 ## Adding or changing a plugin
 
 1. Update the portable plugin and its canonical skills.
-2. Update only the adapters affected by the change.
+2. Update only the co-located native manifests and marketplace entries affected by the change.
 3. Add an entry under `CHANGELOG.md`.
 4. Run `npm test` on a supported Node.js version.
 5. Open a focused pull request describing why the change is needed and how it was verified.

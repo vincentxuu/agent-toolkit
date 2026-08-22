@@ -40,12 +40,19 @@ if (host === 'web') {
 }
 await cp(join(root, 'LICENSE'), join(destination, 'LICENSE'));
 
-if (host === 'codex' || host === 'claude') {
-  const adapter = join(root, 'adapters', host, pluginName);
-  await lstat(adapter).catch(() => {
-    throw new Error(`Missing ${host} adapter for plugin: ${pluginName}`);
-  });
-  await cp(adapter, destination, { recursive: true });
+if (host === 'standard') {
+  await rm(join(destination, '.codex-plugin'), { recursive: true, force: true });
+  await rm(join(destination, '.claude-plugin'), { recursive: true, force: true });
+}
+if (host === 'codex') {
+  await lstat(join(destination, '.codex-plugin', 'plugin.json'));
+  await rm(join(destination, '.claude-plugin'), { recursive: true, force: true });
+  await rm(join(destination, 'plugin.json'), { force: true });
+}
+if (host === 'claude') {
+  await lstat(join(destination, '.claude-plugin', 'plugin.json'));
+  await rm(join(destination, '.codex-plugin'), { recursive: true, force: true });
+  await rm(join(destination, 'plugin.json'), { force: true });
 }
 
 console.log(`Packaged ${pluginName} for ${host}: ${destination}`);

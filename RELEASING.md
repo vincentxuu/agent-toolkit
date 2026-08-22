@@ -22,7 +22,7 @@ npm test
 git diff --check
 ```
 
-The validator rejects version drift between root metadata, portable manifests, and adapters. `npm test` rebuilds standard, Web, Codex, and Claude artifacts under ignored `dist/` and generates `dist/SHA256SUMS`.
+The validator rejects version drift between root metadata, portable and native manifests, and marketplace entries. `npm test` rebuilds standard, Web, Codex, and Claude artifacts under ignored `dist/` and generates `dist/SHA256SUMS`.
 
 ## Publish
 

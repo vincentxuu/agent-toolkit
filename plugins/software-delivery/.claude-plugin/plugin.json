@@ -1,0 +1,9 @@
+{
+  "name": "software-delivery",
+  "version": "0.1.0",
+  "description": "Deliver software changes from specification through recorded browser verification.",
+  "author": {
+    "name": "Agent Toolkit Contributors"
+  },
+  "license": "MIT"
+}

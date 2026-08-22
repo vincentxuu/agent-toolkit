@@ -50,6 +50,7 @@ try {
   expectSuccess(listResult, 'list');
   if (!/deep-research: deep-research/.test(listResult.stdout)) throw new Error('List omitted deep-research');
   if (!/content-authoring: manage-post/.test(listResult.stdout)) throw new Error('List omitted content-authoring');
+  if (!/software-delivery: develop-with-spec/.test(listResult.stdout)) throw new Error('List omitted software-delivery');
 
   const writingProject = join(temporaryRoot, 'writing');
   await mkdir(writingProject);
@@ -59,6 +60,11 @@ try {
   if (retiredWritingName.status === 0 || !/Unknown skill: write-post/.test(retiredWritingName.stderr)) {
     throw new Error('Retired write-post name was not rejected');
   }
+
+  const developmentProject = join(temporaryRoot, 'development');
+  await mkdir(developmentProject);
+  expectSuccess(invoke(['add', 'develop-with-spec'], developmentProject), 'develop-with-spec add');
+  await readFile(join(developmentProject, '.agents', 'skills', 'develop-with-spec', 'scripts', 'verify-playwright-video.mjs'));
 
   const unknownOption = invoke(['add', 'deep-research', '--surprise'], project);
   if (unknownOption.status === 0 || !/Unknown option/.test(unknownOption.stderr)) throw new Error('Unknown option was not rejected');

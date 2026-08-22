@@ -1,0 +1,46 @@
+{
+  "name": "agent-toolkit",
+  "description": "Portable research, content authoring, and spec-driven software delivery workflows.",
+  "owner": {
+    "name": "Agent Toolkit Contributors",
+    "url": "https://github.com/vincentxuu/agent-toolkit"
+  },
+  "plugins": [
+    {
+      "name": "software-delivery",
+      "description": "Deliver software changes from specification through Playwright video evidence.",
+      "source": "./plugins/software-delivery",
+      "version": "0.1.0",
+      "category": "development",
+      "tags": [
+        "sdd",
+        "playwright",
+        "verification"
+      ]
+    },
+    {
+      "name": "deep-research",
+      "description": "Research topics with evidence-first multi-source verification.",
+      "source": "./plugins/deep-research",
+      "version": "0.1.0",
+      "category": "research",
+      "tags": [
+        "research",
+        "evidence",
+        "mcp"
+      ]
+    },
+    {
+      "name": "content-authoring",
+      "description": "Create, update, and verify evidence-aware articles.",
+      "source": "./plugins/content-authoring",
+      "version": "0.1.0",
+      "category": "writing",
+      "tags": [
+        "writing",
+        "markdown",
+        "publishing"
+      ]
+    }
+  ]
+}

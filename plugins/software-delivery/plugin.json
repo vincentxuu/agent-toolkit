@@ -1,0 +1,16 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "software-delivery",
+  "version": "0.1.0",
+  "description": "Spec-driven software delivery with implementation plans, layered verification, and Playwright video evidence.",
+  "author": {
+    "name": "Agent Toolkit Contributors"
+  },
+  "license": "MIT",
+  "keywords": [
+    "software-development",
+    "spec-driven-development",
+    "playwright",
+    "agent-skill"
+  ]
+}

@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file. The project
 
 ### Added
 
+- Native Git marketplace catalogs for one-time Codex and Claude Code registration followed by short `plugin@agent-toolkit` installs.
+- Portable `software-delivery` plugin with a `develop-with-spec` skill for spec-driven implementation, layered verification, and Playwright video evidence.
 - Portable `content-authoring` plugin with a `manage-post` skill for create, update, and verify operations, including auto-detected Quidproquo rules.
 - Self-contained Web/Agent-Skills artifacts generated from canonical skills.
 - Cross-platform CI and installer smoke tests.
@@ -14,6 +16,8 @@ All notable changes to this project will be documented in this file. The project
 
 ### Changed
 
+- Co-located Codex and Claude manifests with canonical plugin skills so marketplace installs no longer depend on generated or duplicated packages.
+- Calibrated `develop-with-spec` against a production cross-repository delivery process, adding mock-versus-real audits, contract dependency ordering, cross-layer invariants, E2E cleanup proof, review loops, clean-worktree release preparation, and CI blocker classification.
 - Reworked the README into a public project landing page with a GitHub-based quick start, workflow examples, an explicit support matrix, CLI reference, and contributor guidance.
 - Deep Research now hands article drafts or existing-article refreshes to `manage-post` when that skill is installed.
 - Hardened plugin packaging and skill installation against path traversal.

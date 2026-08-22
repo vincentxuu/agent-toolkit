@@ -31,14 +31,15 @@ const manifests = [join(root, 'package.json')];
 for (const path of await filesUnder(join(root, 'plugins'))) {
   if (path.endsWith(`${join('', 'plugin.json')}`) && dirname(path) !== join(root, 'plugins')) manifests.push(path);
 }
-for (const path of await filesUnder(join(root, 'adapters'))) {
-  if (path.endsWith('plugin.json')) manifests.push(path);
-}
-
 for (const path of manifests) {
   const manifest = JSON.parse(await readFile(path, 'utf8'));
   manifest.version = version;
   await writeFile(path, `${JSON.stringify(manifest, null, 2)}\n`);
 }
 
-console.log(`Updated ${manifests.length} manifests to ${version}.`);
+const claudeMarketplacePath = join(root, '.claude-plugin', 'marketplace.json');
+const claudeMarketplace = JSON.parse(await readFile(claudeMarketplacePath, 'utf8'));
+for (const plugin of claudeMarketplace.plugins ?? []) plugin.version = version;
+await writeFile(claudeMarketplacePath, `${JSON.stringify(claudeMarketplace, null, 2)}\n`);
+
+console.log(`Updated ${manifests.length} manifests and the Claude marketplace to ${version}.`);

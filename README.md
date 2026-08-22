@@ -4,13 +4,13 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-339933?logo=node.js&logoColor=white)](package.json)
 
-Reusable research and writing workflows for coding agents and Web agents.
+Reusable research, writing, and software-delivery workflows for coding agents and Web agents.
 
 Agent Toolkit keeps each workflow as a portable [Agent Skill](https://agentskills.io/) and packages thin compatibility layers for Agent Plugins, Codex, and Claude Code. Write the workflow once; install it wherever you need it.
 
-> **Project status:** early-stage and ready for local use. The npm package has not been published yet, so the examples below run directly from GitHub.
+> **Project status:** early-stage and installable directly from its GitHub marketplaces. The optional npm CLI is not published yet.
 
-**Plugin** means a distributable bundle, **skill** means the reusable instructions an agent follows, and **adapter** means host-specific metadata around the same canonical skill.
+**Plugin** means a distributable bundle, **skill** means the reusable instructions an agent follows, and **native manifest** means host-specific metadata around the same canonical skill.
 
 - [Quick start](#quick-start)
 - [Available workflows](#available-workflows)
@@ -21,38 +21,27 @@ Agent Toolkit keeps each workflow as a portable [Agent Skill](https://agentskill
 
 ## Quick start
 
-You need Git, Node.js 20 or newer, and an agent that can discover project-level Agent Skills. Open the project where you want the skill, then run:
+Add the marketplace once, then install the plugin you want:
 
 ```bash
-npx --yes github:vincentxuu/agent-toolkit add manage-post
+codex plugin marketplace add vincentxuu/agent-toolkit
+codex plugin add software-delivery@agent-toolkit
 ```
 
-You should see output similar to:
+Start a new Codex session, then use the bundled skill:
 
 ```text
-Installed <your-project>/.agents/skills/manage-post
-Start a new agent session to load the skill.
+$develop-with-spec
+
+Add this account setting from spec through implementation, then record the passing browser flow with Playwright.
 ```
 
-Restart your agent, then try a read-only first task:
-
-```text
-Use manage-post to verify README.md without changing it.
-```
-
-The expected result is a verification report describing the checks that were available; `README.md` should remain unchanged.
-
-To try research instead:
+The marketplace command is one-time. Install the other plugins with one command each:
 
 ```bash
-npx --yes github:vincentxuu/agent-toolkit add deep-research
+codex plugin add deep-research@agent-toolkit
+codex plugin add content-authoring@agent-toolkit
 ```
-
-```text
-Use deep-research to compare the architecture of Codex, Claude Code, and OpenCode.
-```
-
-The installer copies files into the current project and refuses to overwrite different existing content.
 
 ### Before granting write access
 
@@ -60,7 +49,8 @@ Skills run with the permissions of the host agent:
 
 - `deep-research` may call external research services and, in filesystem environments, write a note under `.research/`.
 - `manage-post` stays read-only for verification requests but may create or edit content when the prompt authorizes it.
-- Neither skill treats content editing as permission to commit, push, deploy, or publish.
+- `develop-with-spec` may edit application code, run repository commands, launch local services and browsers, and write test videos when authorized.
+- No skill treats content or code editing as permission to commit, push, deploy, or publish.
 - MCP endpoints and credentials remain under the host client's control and are never bundled here.
 
 ## Available workflows
@@ -69,6 +59,7 @@ Skills run with the permissions of the host agent:
 |---|---|---|
 | `deep-research` | `deep-research` | Plans research questions, gathers and cross-checks sources, records evidence quality, and produces a structured research note. Works with local or remote Groundlane MCP and available fallback research tools. |
 | `content-authoring` | `manage-post` | Creates, updates, or verifies Markdown articles through one entry point. Uses portable writing rules by default and automatically adds Quidproquo-specific schema, bilingual, glossary, and validation rules when that repository is targeted. |
+| `software-delivery` | `develop-with-spec` | Drives single- or multi-repository changes from reconciled specifications through dependency-ordered implementation, cleanup-aware verification, review, and CI handoff. Browser-visible work must finish with a passing Playwright scenario and validated video evidence. |
 
 `manage-post` is intentionally one lifecycle skill—not separate create, update, and verify skills. It infers the operation from your request and respects the target repository's own instructions and validation commands.
 
@@ -82,35 +73,50 @@ Use manage-post to verify this article and report problems without editing it.
 
 `deep-research` needs at least one search/fetch capability in the current agent. Groundlane is optional. When no network research tool exists, the skill works from supplied materials or reports the blocker rather than pretending it verified external claims. Its detailed workflow is currently authored primarily in Traditional Chinese.
 
-## Installation
+`develop-with-spec` first adopts the target repository's existing OpenSpec, Kiro, ADR, RFC, or task workflow. It audits whether visible UI is backed by real storage/API/runtime behavior, follows generated-contract and cross-repository dependency order, verifies disposable-state cleanup, and separates feature regressions from dependency or external CI blockers. When no native SDD exists, it creates a small filesystem-backed spec, design, plan, and verification record.
 
-### Shared Agent Skills directory
-
-The default installs into `.agents/skills` in the current project:
-
-```bash
-npx --yes github:vincentxuu/agent-toolkit add deep-research
+```text
+Use develop-with-spec to add this account setting from spec through implementation, then record the passing browser flow with Playwright.
 ```
 
-Use `--global` to install for your user account instead:
+## Installation
+
+### Codex
+
+Register this GitHub repository once:
 
 ```bash
-npx --yes github:vincentxuu/agent-toolkit add deep-research --global
+codex plugin marketplace add vincentxuu/agent-toolkit
+```
+
+Install any plugin:
+
+```bash
+codex plugin add software-delivery@agent-toolkit
+codex plugin add deep-research@agent-toolkit
+codex plugin add content-authoring@agent-toolkit
 ```
 
 ### Claude Code
 
-Install into the current project's `.claude/skills` directory:
+Register the same repository once, then install a plugin:
 
 ```bash
-npx --yes github:vincentxuu/agent-toolkit add manage-post --claude
+claude plugin marketplace add vincentxuu/agent-toolkit
+claude plugin install software-delivery@agent-toolkit
 ```
 
-Use `--all` when a project should expose the skill through both `.agents/skills` and `.claude/skills`:
+Use `--scope project` on the install command when the project should declare the Claude plugin for collaborators.
+
+### Agent Skills-only clients
+
+Clients without native marketplace support can copy a canonical skill into the current project's `.agents/skills` directory. This fallback requires Node.js 20 or newer:
 
 ```bash
-npx --yes github:vincentxuu/agent-toolkit add manage-post --all
+npx --yes github:vincentxuu/agent-toolkit add develop-with-spec
 ```
+
+Use `--claude`, `--all`, or `--global` only for direct skill-copy workflows. Native Codex and Claude installations should use their marketplace commands above.
 
 ### Contributor checkout
 
@@ -132,8 +138,8 @@ The shared skill is the portability layer. Plugin manifests and discovery paths 
 | Target | Support | Distribution |
 |---|---:|---|
 | Agent Plugins v1 clients | ✅ | `plugins/<plugin>/` or `dist/standard/<plugin>/` |
-| Codex | ✅ | `.agents/skills` or generated Codex plugin |
-| Claude Code | ✅ | `.claude/skills` or generated Claude plugin |
+| Codex | ✅ | Git marketplace + co-located `.codex-plugin` manifest |
+| Claude Code | ✅ | Git marketplace + co-located `.claude-plugin` manifest |
 | Other Agent Skills clients | ◐ | Canonical skill, when the client supports a compatible discovery/import path |
 | Web agents with skill upload | ◐ | Self-contained `dist/web/.../skills/<skill>/` artifact |
 | Web agents without skill/plugin import | — | Use that platform's native instructions and tools |
@@ -141,7 +147,7 @@ The shared skill is the portability layer. Plugin manifests and discovery paths 
 
 `✅` means this repository provides a tested installation or package path. `◐` depends on capabilities exposed by the host. A Web agent cannot access a local checkout or `localhost` unless its platform explicitly provides that connection.
 
-## CLI reference
+## Fallback CLI reference
 
 ```text
 agent-toolkit add <skill>              Install into .agents/skills in the current project
@@ -156,16 +162,29 @@ agent-toolkit pack <plugin>            Build every supported package variant
 
 Run `npx --yes github:vincentxuu/agent-toolkit help` for the current built-in help. Advanced callers may use `--project <directory>` or `--agent shared|claude|all`.
 
-### Updating or removing a skill
+### Updating or removing
 
-Copied installs are snapshots. Re-running `add` is a no-op when the installed files are identical; if they differ, the CLI refuses to overwrite them so local edits cannot be lost silently.
+Native plugin installations use their host's lifecycle commands:
 
-There is no automated `update` or `remove` command yet. To upgrade, review any local changes, remove only that skill's installed directory, and run `add` again. To uninstall, remove only `.agents/skills/<skill>` and/or `.claude/skills/<skill>` from the chosen scope.
+```bash
+# Codex
+codex plugin marketplace upgrade agent-toolkit
+codex plugin add software-delivery@agent-toolkit
+codex plugin remove software-delivery@agent-toolkit
+
+# Claude Code
+claude plugin marketplace update agent-toolkit
+claude plugin update software-delivery@agent-toolkit
+claude plugin uninstall software-delivery@agent-toolkit
+```
+
+Copied skill installs are snapshots. Re-running `add` is a no-op when files are identical and refuses to overwrite differing content. The fallback CLI does not yet provide `update` or `remove`.
 
 ### Troubleshooting
 
 | Problem | What to check |
 |---|---|
+| Plugin is not found | Confirm `agent-toolkit` appears in the host's marketplace list, refresh it, then use `plugin@agent-toolkit`. |
 | The agent cannot find the skill | Confirm the skill exists under the client's discovery directory, then start a new agent session. |
 | `Destination differs; refusing to overwrite` | The installed copy differs from the toolkit. Review it before manually replacing or removing it. |
 | Research cannot access the Web | Confirm the current agent exposes a search/fetch tool or a configured Groundlane MCP connection. |
@@ -174,11 +193,12 @@ There is no automated `update` or `remove` command yet. To upgrade, review any l
 
 ## Build plugin packages
 
-Installing a skill and building a plugin package are different workflows. Most users only need `add`; maintainers and plugin distributors use `pack` from a contributor checkout:
+Native marketplace users do not need to build artifacts. Maintainers and other distributors can generate host-specific archives from a contributor checkout:
 
 ```bash
 node bin/agent-toolkit.mjs pack deep-research
 node bin/agent-toolkit.mjs pack content-authoring
+node bin/agent-toolkit.mjs pack software-delivery
 ```
 
 Artifacts are written to `dist/<host>/<plugin>/`:
@@ -206,13 +226,17 @@ Store credentials in each host's secret-backed MCP settings. Never commit tokens
 plugins/
   deep-research/
     plugin.json                 # portable Agent Plugins manifest
+    .codex-plugin/plugin.json   # Codex-native metadata
+    .claude-plugin/plugin.json  # Claude Code-native metadata
     skills/deep-research/       # canonical skill and references
   content-authoring/
     plugin.json
     skills/manage-post/         # canonical article lifecycle skill
-adapters/
-  codex/                        # metadata-only Codex wrappers
-  claude/                       # metadata-only Claude Code wrappers
+  software-delivery/
+    plugin.json
+    skills/develop-with-spec/   # spec, implementation, and video evidence
+.agents/plugins/marketplace.json       # Codex Git marketplace
+.claude-plugin/marketplace.json        # Claude Code Git marketplace
 bin/agent-toolkit.mjs           # user-facing CLI
 scripts/                        # validation, packaging, and tests
 ```

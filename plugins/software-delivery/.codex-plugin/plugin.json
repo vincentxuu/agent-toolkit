@@ -1,0 +1,24 @@
+{
+  "name": "software-delivery",
+  "version": "0.1.0",
+  "description": "Deliver software changes from specification through recorded browser verification.",
+  "author": {
+    "name": "Agent Toolkit Contributors"
+  },
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Software Delivery",
+    "shortDescription": "Develop from specs with recorded browser evidence.",
+    "longDescription": "Define acceptance criteria, implement against a filesystem-backed plan, run layered checks, and record Playwright video evidence for browser-visible changes.",
+    "developerName": "Agent Toolkit Contributors",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Coding",
+      "Testing"
+    ],
+    "defaultPrompt": [
+      "Use develop-with-spec to define, implement, and verify this change with Playwright video evidence."
+    ]
+  }
+}

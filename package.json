@@ -1,7 +1,7 @@
 {
   "name": "agent-toolkit",
   "version": "0.1.0",
-  "description": "Portable Agent Plugins, Agent Skills, and host adapters.",
+  "description": "Portable Agent Plugins, Agent Skills, and native marketplaces.",
   "private": true,
   "license": "MIT",
   "repository": {
