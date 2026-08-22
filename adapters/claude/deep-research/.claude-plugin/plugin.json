@@ -1,0 +1,9 @@
+{
+  "name": "deep-research",
+  "version": "0.1.0",
+  "description": "Portable, evidence-first multi-source research workflow.",
+  "author": {
+    "name": "Agent Toolkit Contributors"
+  },
+  "license": "MIT"
+}

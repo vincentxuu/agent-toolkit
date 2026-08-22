@@ -1,0 +1,21 @@
+{
+  "name": "agent-toolkit",
+  "version": "0.1.0",
+  "description": "Portable Agent Plugins, Agent Skills, and host adapters.",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "agent-toolkit": "./bin/agent-toolkit.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "cli": "node bin/agent-toolkit.mjs",
+    "package": "node scripts/package-host.mjs",
+    "set-version": "node scripts/set-version.mjs",
+    "test": "node scripts/verify.mjs",
+    "validate": "node scripts/validate.mjs"
+  }
+}

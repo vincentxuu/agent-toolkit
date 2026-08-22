@@ -1,0 +1,23 @@
+{
+  "name": "content-authoring",
+  "version": "0.1.0",
+  "description": "Create, update, and verify articles across repositories and Web agents.",
+  "author": {
+    "name": "Agent Toolkit Contributors"
+  },
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Content Authoring",
+    "shortDescription": "Create, update, and verify publishable articles.",
+    "longDescription": "Manage evidence-aware Markdown articles across their create, update, and verification lifecycle, adapting to the current repository including Quidproquo.",
+    "developerName": "Agent Toolkit Contributors",
+    "category": "Productivity",
+    "capabilities": [
+      "Writing"
+    ],
+    "defaultPrompt": [
+      "Use manage-post to create, update, or verify this article."
+    ]
+  }
+}

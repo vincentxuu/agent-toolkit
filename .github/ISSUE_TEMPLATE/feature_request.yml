@@ -1,0 +1,31 @@
+name: Feature request
+description: Propose a portable plugin, skill, adapter, or repository improvement.
+title: "feature: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Describe the user problem rather than only the desired implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: checkboxes
+    id: portability
+    attributes:
+      label: Portability impact
+      options:
+        - label: This belongs in the portable Agent Plugins or Agent Skills core.
+        - label: This requires a host-specific adapter.
+        - label: This changes MCP or credential configuration.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

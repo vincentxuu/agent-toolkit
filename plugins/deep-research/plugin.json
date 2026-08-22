@@ -1,0 +1,16 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "deep-research",
+  "version": "0.1.0",
+  "description": "Portable, evidence-first multi-source research for tools, frameworks, papers, models, products, and trends.",
+  "author": {
+    "name": "Agent Toolkit Contributors"
+  },
+  "license": "MIT",
+  "keywords": [
+    "research",
+    "agent-skill",
+    "mcp",
+    "groundlane"
+  ]
+}

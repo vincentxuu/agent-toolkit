@@ -1,0 +1,53 @@
+name: Bug report
+description: Report reproducible incorrect behavior in a plugin, skill, adapter, or script.
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: Do not include credentials, private endpoints, or undisclosed vulnerabilities. Use the Security policy for sensitive reports.
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - Portable plugin
+        - Agent Skill
+        - Codex adapter
+        - Claude Code adapter
+        - Gemini CLI adapter
+        - Packaging or installer script
+        - Documentation
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: 0.1.0 or commit SHA
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Agent and environment
+      description: Include client version, operating system, Node.js version, and local or Web-hosted mode where relevant.

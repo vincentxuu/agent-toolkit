@@ -1,0 +1,23 @@
+{
+  "name": "deep-research",
+  "version": "0.1.0",
+  "description": "Portable, evidence-first multi-source research workflow.",
+  "author": {
+    "name": "Agent Toolkit Contributors"
+  },
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Deep Research",
+    "shortDescription": "Research a topic with verified primary sources.",
+    "longDescription": "Plan research questions, gather and cross-check sources, and produce a structured evidence-first research note.",
+    "developerName": "Agent Toolkit Contributors",
+    "category": "Productivity",
+    "capabilities": [
+      "Research"
+    ],
+    "defaultPrompt": [
+      "Use deep-research to investigate this topic and produce a verified research note."
+    ]
+  }
+}

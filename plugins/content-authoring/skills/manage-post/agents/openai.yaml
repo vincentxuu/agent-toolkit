@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manage Post"
+  short_description: "Create, update, and verify publishable articles"
+  default_prompt: "Use $manage-post to create, update, or verify this article."
