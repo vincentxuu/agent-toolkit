@@ -1,23 +1,35 @@
+<div align="center">
+
 # Agent Toolkit
+
+**Reusable research, writing, and software-delivery workflows for coding agents and Web agents.**
 
 [![CI](https://github.com/vincentxuu/agent-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/vincentxuu/agent-toolkit/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-339933?logo=node.js&logoColor=white)](package.json)
 
-Reusable research, writing, and software-delivery workflows for coding agents and Web agents.
+[Quick start](#quick-start) · [Plugins](#plugins-at-a-glance) · [Installation](#installation) · [Compatibility](#compatibility) · [CLI](#cli-reference) · [Docs](#how-the-repository-is-organized)
+
+</div>
 
 Agent Toolkit keeps each workflow as a portable [Agent Skill](https://agentskills.io/) and packages thin compatibility layers for Agent Plugins, Codex, and Claude Code. Write the workflow once; install it wherever you need it.
 
-> **Project status:** early-stage and installable directly from its GitHub marketplaces. The optional npm CLI is not published yet.
+> [!IMPORTANT]
+> Agent Toolkit is early-stage and installable directly from its GitHub marketplaces. The optional npm CLI is not published yet, and plugin manifest shapes may still change between releases.
 
 **Plugin** means a distributable bundle, **skill** means the reusable instructions an agent follows, and **native manifest** means host-specific metadata around the same canonical skill.
 
-- [Quick start](#quick-start)
-- [Available workflows](#available-workflows)
-- [Installation](#installation)
-- [Compatibility](#compatibility)
-- [CLI reference](#cli-reference)
-- [Development](#development)
+## Plugins at a glance
+
+| Plugin | Skill | What it does |
+|---|---|---|
+| `deep-research` | `deep-research` | Plans research questions, gathers and cross-checks sources, records evidence quality, and produces a structured research note. Works with local or remote Groundlane MCP and available fallback research tools. |
+| `content-authoring` | `manage-post` | Creates, updates, or verifies Markdown articles through one entry point. Uses portable writing rules by default and automatically adds Quidproquo-specific schema, bilingual, glossary, and validation rules when that repository is targeted. |
+| `software-delivery` | `develop-with-spec` | Drives single- or multi-repository changes from reconciled specifications through dependency-ordered implementation, cleanup-aware verification, review, and CI handoff. Browser-visible work must finish with a passing Playwright scenario and validated video evidence. |
+
+- `manage-post` is intentionally one lifecycle skill—not separate create, update, and verify skills. It infers the operation from your request and respects the target repository's own instructions and validation commands.
+- `deep-research` needs at least one search/fetch capability in the current agent. Groundlane is optional; see [Security and limitations](#security-and-limitations).
+- `develop-with-spec` first adopts the target repository's existing OpenSpec, Kiro, ADR, RFC, or task workflow, and creates a small filesystem-backed spec, design, plan, and verification record when no native SDD exists.
 
 ## Quick start
 
@@ -52,32 +64,6 @@ Skills run with the permissions of the host agent:
 - `develop-with-spec` may edit application code, run repository commands, launch local services and browsers, and write test videos when authorized.
 - No skill treats content or code editing as permission to commit, push, deploy, or publish.
 - MCP endpoints and credentials remain under the host client's control and are never bundled here.
-
-## Available workflows
-
-| Plugin | Skill | What it does |
-|---|---|---|
-| `deep-research` | `deep-research` | Plans research questions, gathers and cross-checks sources, records evidence quality, and produces a structured research note. Works with local or remote Groundlane MCP and available fallback research tools. |
-| `content-authoring` | `manage-post` | Creates, updates, or verifies Markdown articles through one entry point. Uses portable writing rules by default and automatically adds Quidproquo-specific schema, bilingual, glossary, and validation rules when that repository is targeted. |
-| `software-delivery` | `develop-with-spec` | Drives single- or multi-repository changes from reconciled specifications through dependency-ordered implementation, cleanup-aware verification, review, and CI handoff. Browser-visible work must finish with a passing Playwright scenario and validated video evidence. |
-
-`manage-post` is intentionally one lifecycle skill—not separate create, update, and verify skills. It infers the operation from your request and respects the target repository's own instructions and validation commands.
-
-Examples:
-
-```text
-Use manage-post to create an article from these incident notes.
-Use manage-post to update docs/posts/retry-design.md with the current API behavior.
-Use manage-post to verify this article and report problems without editing it.
-```
-
-`deep-research` needs at least one search/fetch capability in the current agent. Groundlane is optional. When no network research tool exists, the skill works from supplied materials or reports the blocker rather than pretending it verified external claims. Its detailed workflow is currently authored primarily in Traditional Chinese.
-
-`develop-with-spec` first adopts the target repository's existing OpenSpec, Kiro, ADR, RFC, or task workflow. It audits whether visible UI is backed by real storage/API/runtime behavior, follows generated-contract and cross-repository dependency order, verifies disposable-state cleanup, and separates feature regressions from dependency or external CI blockers. When no native SDD exists, it creates a small filesystem-backed spec, design, plan, and verification record.
-
-```text
-Use develop-with-spec to add this account setting from spec through implementation, then record the passing browser flow with Playwright.
-```
 
 ## Installation
 
@@ -131,6 +117,13 @@ node bin/agent-toolkit.mjs list
 
 Use `--link` only while developing locally. Normal installs copy the skill so they do not break when this checkout moves.
 
+## Why Agent Toolkit?
+
+- **Write once, install anywhere:** one canonical skill powers Codex, Claude Code, and plain Agent Skills clients through thin native manifests.
+- **Single source of truth:** skill content lives only under `plugins/<plugin>/skills/`; adapters never fork or duplicate it.
+- **No credentials by design:** MCP endpoints, tokens, and provider keys stay under the host client's control and never enter a plugin or skill.
+- **Tested package shapes:** every distribution target is validated by the test suite and CI across Linux, macOS, and Windows.
+
 ## Compatibility
 
 The shared skill is the portability layer. Plugin manifests and discovery paths are host-specific.
@@ -147,7 +140,7 @@ The shared skill is the portability layer. Plugin manifests and discovery paths 
 
 `✅` means this repository provides a tested installation or package path. `◐` depends on capabilities exposed by the host. A Web agent cannot access a local checkout or `localhost` unless its platform explicitly provides that connection.
 
-## Fallback CLI reference
+## CLI reference
 
 ```text
 agent-toolkit add <skill>              Install into .agents/skills in the current project
@@ -210,16 +203,6 @@ Artifacts are written to `dist/<host>/<plugin>/`:
 
 Generated packages include the MIT license and checksums. Credentials are never bundled.
 
-## Groundlane and secrets
-
-`deep-research` can use a local or remote [Groundlane](https://github.com/vincentxuu/groundlane) MCP connection when the current agent exposes it. This repository does not embed an authenticated MCP endpoint or bearer token.
-
-- Desktop agents may connect to an already configured local or remote Groundlane server.
-- Web-hosted agents require a publicly reachable HTTPS MCP endpoint registered through the platform.
-- When Groundlane is unavailable, the skill uses research tools that are actually present and reports the fallback.
-
-Store credentials in each host's secret-backed MCP settings. Never commit tokens to a plugin manifest or skill.
-
 ## How the repository is organized
 
 ```text
@@ -243,9 +226,12 @@ scripts/                        # validation, packaging, and tests
 
 Canonical skill content exists only under `plugins/<plugin>/skills/`. Adapters must not fork or duplicate `SKILL.md`.
 
-### Non-goals
+## Security and limitations
 
-Agent Toolkit is not currently a general-purpose package manager, hosted MCP service, credential store, or promise that every agent host implements the same plugin features. It provides canonical workflows plus tested package shapes; each host still controls discovery, permissions, tools, and authentication.
+- Skills run with the full permissions of their host agent—review [Before granting write access](#before-granting-write-access) before installing.
+- Store credentials in each host's secret-backed MCP settings. Never commit tokens to a plugin manifest or skill.
+- `deep-research` can use a local or remote [Groundlane](https://github.com/vincentxuu/groundlane) MCP connection when the current agent exposes it. Desktop agents may connect to an already configured server; Web-hosted agents require a publicly reachable HTTPS endpoint registered through the platform. When Groundlane is unavailable, the skill uses research tools that are actually present and reports the fallback.
+- This repository is not currently a general-purpose package manager, hosted MCP service, credential store, or promise that every agent host implements the same plugin features. It provides canonical workflows plus tested package shapes; each host still controls discovery, permissions, tools, and authentication.
 
 ## Development
 
