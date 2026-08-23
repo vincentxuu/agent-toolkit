@@ -74,7 +74,7 @@ Run verification in increasing scope:
 4. acceptance-criteria walkthrough;
 5. Playwright browser evidence for every browser-visible flow.
 6. environment teardown and residue checks for integration/E2E runs.
-7. independent review and post-fix regression checks when repository policy or change risk requires them.
+7. independent review and post-fix regression checks when repository policy or change risk requires them; use the multi-backend review and synthesis contract in `references/review-and-release.md` when model review is requested and permitted.
 
 Record exact commands, exit status, and what each check proves in `verification.md` or the repository's native equivalent. A passing build does not prove the user flow; a video does not prove hidden state, API, accessibility, cleanup, privacy, or all assertions. Use sentinel data and inspect every relevant surface when an invariant concerns secrets or private content.
 

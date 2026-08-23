@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file. The project
 
 - Co-located Codex and Claude manifests with canonical plugin skills so marketplace installs no longer depend on generated or duplicated packages.
 - Calibrated `develop-with-spec` against a production cross-repository delivery process, adding mock-versus-real audits, contract dependency ordering, cross-layer invariants, E2E cleanup proof, review loops, clean-worktree release preparation, and CI blocker classification.
+- Added optional independent Codex CLI, OMP, and Claude CLI review backends over a shared bounded patch, with backend isolation, blocked-state reporting, and evidence-based cross-model synthesis.
 - Reworked the README into a public project landing page with a GitHub-based quick start, workflow examples, an explicit support matrix, CLI reference, and contributor guidance.
 - Deep Research now hands article drafts or existing-article refreshes to `manage-post` when that skill is installed.
 - Hardened plugin packaging and skill installation against path traversal.

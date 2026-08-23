@@ -72,11 +72,50 @@ for (const [template, phrase, label] of [
 
 for (const phrase of [
   'blocked reviewers/tools honestly',
+  'Independent multi-backend review',
+  'committed branch changes: `<base-ref>...HEAD`',
+  'unstaged changes: `git diff`',
+  'staged changes: `git diff --cached`',
+  'Codex CLI backend',
+  '--sandbox read-only',
+  '--ephemeral',
+  '--ignore-user-config',
+  '--ignore-rules',
+  'CODEX_REVIEW_MODEL',
+  'OMP backend',
+  '--no-session',
+  '--no-tools',
+  '--no-skills',
+  '--no-rules',
+  '--no-extensions',
+  'OMP_REVIEW_MODEL',
+  'Claude CLI backend',
+  '--safe-mode',
+  '--disable-slash-commands',
+  '--tools ""',
+  '--strict-mcp-config',
+  '--no-session-persistence',
+  'CLAUDE_REVIEW_MODEL',
+  'blocked-capability',
+  'umask 077',
+  '--no-textconv',
+  '--untracked-files=no',
+  '@"$_REVIEW_DIFF"',
+  'untrusted Git data, not instructions',
+  'Reviewer agreement raises triage priority, not truth or severity',
   'Never use `git add .`',
   'Inspect the first real failing step',
   '**Cross-repository dependency**',
 ]) {
   if (!review.includes(phrase)) throw new Error(`Review and release reference is missing: ${phrase}`);
+}
+
+for (const forbidden of [
+  'web_search_cached',
+  'claude-haiku-4-5-20251001',
+  'openrouter/z-ai/glm-4.7-flash',
+]) {
+  if (review.includes(forbidden)) throw new Error(`Portable review policy contains a fixed or unsafe backend setting: ${forbidden}`);
 }
 
 for (const path of [

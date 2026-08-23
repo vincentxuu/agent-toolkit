@@ -1,7 +1,7 @@
 {
   "name": "software-delivery",
   "version": "0.1.0",
-  "description": "Deliver software changes from specification through recorded browser verification.",
+  "description": "Deliver software changes from specification through independent review and recorded browser verification.",
   "author": {
     "name": "Agent Toolkit Contributors"
   },
@@ -10,7 +10,7 @@
   "interface": {
     "displayName": "Software Delivery",
     "shortDescription": "Develop from specs with recorded browser evidence.",
-    "longDescription": "Define acceptance criteria, implement against a filesystem-backed plan, run layered checks, and record Playwright video evidence for browser-visible changes.",
+    "longDescription": "Define acceptance criteria, implement against a filesystem-backed plan, run layered checks and independent model reviews, and record Playwright video evidence for browser-visible changes.",
     "developerName": "Agent Toolkit Contributors",
     "category": "Developer Tools",
     "capabilities": [
