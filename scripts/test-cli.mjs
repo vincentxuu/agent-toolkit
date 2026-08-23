@@ -51,6 +51,7 @@ try {
   if (!/deep-research: deep-research/.test(listResult.stdout)) throw new Error('List omitted deep-research');
   if (!/content-authoring: manage-post/.test(listResult.stdout)) throw new Error('List omitted content-authoring');
   if (!/software-delivery: develop-with-spec/.test(listResult.stdout)) throw new Error('List omitted software-delivery');
+  if (!/security-engineering: develop-securely/.test(listResult.stdout)) throw new Error('List omitted security-engineering');
 
   const writingProject = join(temporaryRoot, 'writing');
   await mkdir(writingProject);

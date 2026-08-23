@@ -2,7 +2,7 @@
 
 # Agent Toolkit
 
-**Reusable research, writing, and software-delivery workflows for coding agents and Web agents.**
+**Reusable research, writing, software-delivery, and security workflows for coding agents and Web agents.**
 
 [![CI](https://github.com/vincentxuu/agent-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/vincentxuu/agent-toolkit/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)

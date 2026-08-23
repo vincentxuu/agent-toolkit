@@ -2,7 +2,7 @@
 
 # Agent Toolkit
 
-**給 coding agent 與 Web agent 的可重複使用研究、寫作、軟體交付工作流。**
+**給 coding agent 與 Web agent 的可重複使用研究、寫作、軟體交付、資安工作流。**
 
 [![CI](https://github.com/vincentxuu/agent-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/vincentxuu/agent-toolkit/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)

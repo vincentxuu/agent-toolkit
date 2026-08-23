@@ -42,6 +42,7 @@ run('test-installers.mjs');
 run('test-cli.mjs');
 run('test-content-authoring.mjs');
 run('test-software-delivery.mjs');
+run('test-security-engineering.mjs');
 run('test-rejections.mjs');
 
 async function filesUnder(path) {
