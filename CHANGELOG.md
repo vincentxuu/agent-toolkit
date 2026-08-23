@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. The project
 - Native Git marketplace catalogs for one-time Codex and Claude Code registration followed by short `plugin@agent-toolkit` installs.
 - Portable `software-delivery` plugin with a `develop-with-spec` skill for spec-driven implementation, layered verification, and Playwright video evidence.
 - Portable `content-authoring` plugin with a `manage-post` skill for create, update, and verify operations, including auto-detected Quidproquo rules.
+- Portable `security-engineering` plugin with a `develop-securely` skill for threat modeling, OWASP-based secure coding, and severity-classified security review, including agentic-AI trust-boundary, prompt-injection, and delegated-authorization guidance. Bundles `scan-secrets.mjs`, `scan-dependencies.mjs`, and `fetch-platform-alerts.mjs` so findings are grounded in actual scanner and GitHub-alert output, not code reading alone. Auto-detects casual, non-technical requests and switches to a plain-language report with copy-pasteable AI-tool instructions instead of a technical findings table, so non-engineer vibe coders can act on results too.
 - Self-contained Web/Agent-Skills artifacts generated from canonical skills.
 - Cross-platform CI and installer smoke tests.
 - Contribution, security, conduct, and release guidance.

@@ -41,6 +41,19 @@
         "markdown",
         "publishing"
       ]
+    },
+    {
+      "name": "security-engineering",
+      "description": "Threat model, secure-code, and review software and AI-agent changes.",
+      "source": "./plugins/security-engineering",
+      "version": "0.1.0",
+      "category": "security",
+      "tags": [
+        "security",
+        "threat-modeling",
+        "owasp",
+        "agentic-ai"
+      ]
     }
   ]
 }

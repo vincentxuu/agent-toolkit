@@ -28,10 +28,12 @@ Agent Toolkit keeps each workflow as a portable [Agent Skill](https://agentskill
 | `deep-research` | `deep-research` | Plans research questions, gathers and cross-checks sources, records evidence quality, and produces a structured research note. Works with local or remote Groundlane MCP and available fallback research tools. |
 | `content-authoring` | `manage-post` | Creates, updates, or verifies Markdown articles through one entry point. Uses portable writing rules by default and automatically adds Quidproquo-specific schema, bilingual, glossary, and validation rules when that repository is targeted. |
 | `software-delivery` | `develop-with-spec` | Drives single- or multi-repository changes from reconciled specifications through dependency-ordered implementation, cleanup-aware verification, review, and CI handoff. Browser-visible work must finish with a passing Playwright scenario and validated video evidence. |
+| `security-engineering` | `develop-securely` | Runs threat modeling, an OWASP-based secure coding checklist, and severity-classified security review across software and AI-agent changes, including agent/LLM-specific trust-boundary, prompt-injection, and delegated-authorization risks. Bundles scripts that shell out to gitleaks/SCA tools/`gh` when available so findings are grounded in scanner output, not code reading alone. Auto-detects casual, non-technical requests ("is this safe to launch?") and reports in plain language with copy-pasteable fixes instead of a technical findings table. |
 
 - `manage-post` is intentionally one lifecycle skill—not separate create, update, and verify skills. It infers the operation from your request and respects the target repository's own instructions and validation commands.
 - `deep-research` needs at least one search/fetch capability in the current agent. Groundlane is optional; see [Security and limitations](#security-and-limitations).
 - `develop-with-spec` first adopts the target repository's existing OpenSpec, Kiro, ADR, RFC, or task workflow, and creates a small filesystem-backed spec, design, plan, and verification record when no native SDD exists.
+- `develop-securely` covers the security-specific layer and complements `develop-with-spec`'s general verification step; it does not require that plugin to be installed.
 
 ## Quick start
 
@@ -55,7 +57,24 @@ The marketplace command is one-time. Install the other plugins with one command 
 ```bash
 codex plugin add deep-research@agent-toolkit
 codex plugin add content-authoring@agent-toolkit
+codex plugin add security-engineering@agent-toolkit
 ```
+
+### Using `develop-securely`
+
+No special syntax — say what you're actually doing and the skill infers which phase to run:
+
+```text
+Threat model this new payment feature before we start building it.
+
+Review this PR for security issues, focus on the new file-upload endpoint.
+
+Someone reported that user A can see user B's orders. Triage it.
+
+Is this safe to launch? I vibe-coded this app and I'm about to show it to real users.
+```
+
+The first three get a technical findings report — severity, exploit path, file:line, remediation. The last one, or anything phrased that casually, gets a plain-language report instead: a one-line verdict, findings grouped by "fix before you launch / fix soon / minor," and a copy-pasteable instruction for each one you can hand back to your AI tool. See [Plugins at a glance](#plugins-at-a-glance) for what each mode checks.
 
 ### Before granting write access
 
@@ -64,10 +83,30 @@ Skills run with the permissions of the host agent:
 - `deep-research` may call external research services and, in filesystem environments, write a note under `.research/`.
 - `manage-post` stays read-only for verification requests but may create or edit content when the prompt authorizes it.
 - `develop-with-spec` may edit application code, run repository commands, launch local services and browsers, and write test videos when authorized.
+- `develop-securely` may edit application code, write threat-model/review records under `.agent-toolkit/security/`, and invoke local scanners (gitleaks, npm/pnpm/yarn audit, pip-audit, govulncheck, cargo-audit) or the `gh` CLI when installed; it does not fix security-critical findings without explicit authorization beyond the review request.
 - No skill treats content or code editing as permission to commit, push, deploy, or publish.
 - MCP endpoints and credentials remain under the host client's control and are never bundled here.
 
 ## Installation
+
+### If you're vibe coding and don't write code yourself
+
+You can still install `security-engineering` and ask it to check your app before you launch it — no code-reading required. This works if you're building through **Claude Code** or **Codex CLI** (the terminal-based AI coding tools). It does not yet work inside GUI-only builders like Lovable, bolt.new, v0, or Replit's simplified mode — those platforms would need to add their own plugin/skill import support first; there's no workaround for that from this repository.
+
+If you're using Claude Code, open the same terminal window it's already running in and paste these two lines once:
+
+```bash
+claude plugin marketplace add vincentxuu/agent-toolkit
+claude plugin install security-engineering@agent-toolkit
+```
+
+(Using Codex CLI instead? Use `codex plugin marketplace add vincentxuu/agent-toolkit` then `codex plugin add security-engineering@agent-toolkit`.)
+
+That's it — nothing else on your computer is touched. From then on, just ask in plain language, in the same session where you've been building your app:
+
+> "Is this safe to launch?" / "這個安全嗎，我要上線了" / "Check this before I show it to real users."
+
+It replies with a plain-language summary — no security jargon — grouped by "fix before you launch" / "fix soon" / "minor, whenever," each with an instruction you can copy straight back to your AI tool. See [Plugins at a glance](#plugins-at-a-glance) for what it checks and [Security and limitations](#security-and-limitations) for what it can't guarantee.
 
 ### Codex
 
@@ -83,6 +122,7 @@ Install any plugin:
 codex plugin add software-delivery@agent-toolkit
 codex plugin add deep-research@agent-toolkit
 codex plugin add content-authoring@agent-toolkit
+codex plugin add security-engineering@agent-toolkit
 ```
 
 ### Claude Code
@@ -194,6 +234,7 @@ Native marketplace users do not need to build artifacts. Maintainers and other d
 node bin/agent-toolkit.mjs pack deep-research
 node bin/agent-toolkit.mjs pack content-authoring
 node bin/agent-toolkit.mjs pack software-delivery
+node bin/agent-toolkit.mjs pack security-engineering
 ```
 
 Artifacts are written to `dist/<host>/<plugin>/`:
@@ -220,6 +261,9 @@ plugins/
   software-delivery/
     plugin.json
     skills/develop-with-spec/   # spec, implementation, and video evidence
+  security-engineering/
+    plugin.json
+    skills/develop-securely/    # threat modeling, secure coding, and review
 .agents/plugins/marketplace.json       # Codex Git marketplace
 .claude-plugin/marketplace.json        # Claude Code Git marketplace
 bin/agent-toolkit.mjs           # user-facing CLI

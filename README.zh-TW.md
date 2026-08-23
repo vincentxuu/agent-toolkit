@@ -28,10 +28,12 @@ Agent Toolkit 將每個工作流做成可攜式的 [Agent Skill](https://agentsk
 | `deep-research` | `deep-research` | 規劃研究問題、蒐集並交叉查核來源、記錄證據品質，產出結構化研究筆記。可搭配本地或遠端 Groundlane MCP 及其他可用研究工具。 |
 | `content-authoring` | `manage-post` | 以單一入口建立、更新或驗證 Markdown 文章。預設使用可攜式寫作規則；當目標是 Quidproquo 時自動加上該站的 schema、雙語、glossary 與驗證規則。 |
 | `software-delivery` | `develop-with-spec` | 從對齊後的規格驅動單一或多儲存庫變更，依依賴順序實作、清理感知的驗證、審查與 CI 交接。涉及瀏覽器可見的工作必須以通過的 Playwright 場景與經驗證的影片證據收尾。 |
+| `security-engineering` | `develop-securely` | 對軟體與 AI agent 變更執行威脅建模、以 OWASP 為基礎的安全程式碼檢查清單，以及分級嚴重度的安全審查，涵蓋 agent/LLM 特有的信任邊界、prompt injection 與委派授權風險。內建腳本會在環境有安裝時呼叫 gitleaks／SCA 工具／`gh`，讓發現建立在掃描結果上，而非只靠程式碼閱讀。會自動偵測「這個安全嗎」「我要上線了幫我看一下」這類非技術口吻的請求，改用白話文報告並附上可直接貼給 AI 工具的修復指令，不會端出技術性的嚴重度表格。 |
 
 - `manage-post` 刻意設計為單一生命週期技能——不拆成 create、update、verify 三個技能。它從你的請求推斷操作類型，並尊重目標儲存庫自己的指令與驗證命令。
 - `deep-research` 需要目前 agent 具備至少一個搜尋/抓取能力。Groundlane 為選用；詳見[安全性與限制](#安全性與限制)。
 - `develop-with-spec` 會先採用目標儲存庫既有的 OpenSpec、Kiro、ADR、RFC 或任務工作流；若無原生 SDD，則建立輕量的檔案系統版 spec、design、plan 與驗證紀錄。
+- `develop-securely` 涵蓋安全專屬的一層，與 `develop-with-spec` 的一般驗證步驟互補；不需要安裝該外掛也能單獨使用。
 
 ## 快速開始
 
@@ -55,7 +57,24 @@ marketplace 指令只需執行一次。其餘外掛各一行指令即可安裝�
 ```bash
 codex plugin add deep-research@agent-toolkit
 codex plugin add content-authoring@agent-toolkit
+codex plugin add security-engineering@agent-toolkit
 ```
+
+### 使用 `develop-securely`
+
+不需要特殊語法，直接說你實際在做的事，skill 會自己判斷該跑哪個階段：
+
+```text
+幫我威脅建模這個新的付款功能，我們還沒開始寫。
+
+審查這份 PR 的安全問題，重點看新的檔案上傳端點。
+
+有人回報 A 使用者可以看到 B 使用者的訂單，幫我 triage。
+
+這個安全嗎？我是 vibe coding 出來的 app，準備要給真的使用者用了。
+```
+
+前三個會得到技術版報告——嚴重度、攻擊情境、程式碼位置、修復建議。最後一個，或任何講得這麼口語的請求，會改成白話報告：一句話結論、按「上線前必修／建議快修／小提醒」分組的發現，每一項都附一句可以直接複製貼給你的 AI 工具的修復指令。想知道每種模式實際檢查什麼，看[外掛總覽](#外掛總覽)。
 
 ### 授權寫入權限前
 
@@ -64,10 +83,30 @@ Skills 以宿主 agent 的權限執行：
 - `deep-research` 可能呼叫外部研究服務，在具檔案系統的環境中會在 `.research/` 下寫入筆記。
 - `manage-post` 在驗證請求時保持唯讀，但當 prompt 明確授權時可建立或編輯內容。
 - `develop-with-spec` 在獲得授權時可能編輯應用程式碼、執行儲存庫命令、啟動本地服務與瀏覽器，並寫入測試影片。
+- `develop-securely` 可能編輯應用程式碼、在 `.agent-toolkit/security/` 下寫入威脅模型與審查紀錄，並在本機已安裝時呼叫 gitleaks、npm/pnpm/yarn audit、pip-audit、govulncheck、cargo-audit 或 `gh` CLI；未經審查請求以外的明確授權，不會修復安全關鍵發現。
 - 沒有任何技能會把「編輯內容或程式碼」視為 commit、push、deploy 或 publish 的許可。
 - MCP endpoint 與憑證由宿主 client 控制，絕不會被打包進本專案。
 
 ## 安裝
+
+### 如果你是 vibe coding、自己不寫程式
+
+你還是可以安裝 `security-engineering`，在上線前請它幫你檢查——不需要看得懂程式碼。前提是你是透過 **Claude Code** 或 **Codex CLI**（這兩個有終端機的 AI 寫程式工具）在開發。目前還沒辦法在 Lovable、bolt.new、v0、Replit 簡易模式這類純圖形介面的工具裡使用——那些平台要先自己支援 plugin/skill 匯入，這件事沒辦法從這個 repo 這邊補上，老實講清楚這個限制。
+
+如果你用的是 Claude Code，打開你平常叫它幫你寫程式的那個終端機視窗，貼上這兩行、執行一次：
+
+```bash
+claude plugin marketplace add vincentxuu/agent-toolkit
+claude plugin install security-engineering@agent-toolkit
+```
+
+（用 Codex CLI 的話，改用 `codex plugin marketplace add vincentxuu/agent-toolkit`，再 `codex plugin add security-engineering@agent-toolkit`。）
+
+就這樣，不會動到你電腦上其他任何東西。之後在同一個你一直在開發 app 的對話裡，直接用你自己的話問：
+
+> 「這個安全嗎，我要上線了」／「Is this safe to launch?」／「幫我看一下這個，我要給真的使用者用了。」
+
+它會用白話文回覆——不會有安全術語——按「上線前必修」／「不急，建議修」／「小提醒，有空再看」分組，每一項都附上一句可以直接複製貼給你的 AI 工具的修復指令。想知道它實際會檢查什麼，看[外掛總覽](#外掛總覽)；想知道它不能保證什麼，看[安全性與限制](#安全性與限制)。
 
 ### Codex
 
@@ -83,6 +122,7 @@ codex plugin marketplace add vincentxuu/agent-toolkit
 codex plugin add software-delivery@agent-toolkit
 codex plugin add deep-research@agent-toolkit
 codex plugin add content-authoring@agent-toolkit
+codex plugin add security-engineering@agent-toolkit
 ```
 
 ### Claude Code
@@ -194,6 +234,7 @@ claude plugin uninstall software-delivery@agent-toolkit
 node bin/agent-toolkit.mjs pack deep-research
 node bin/agent-toolkit.mjs pack content-authoring
 node bin/agent-toolkit.mjs pack software-delivery
+node bin/agent-toolkit.mjs pack security-engineering
 ```
 
 Artifacts 輸出至 `dist/<host>/<plugin>/`：
@@ -220,6 +261,9 @@ plugins/
   software-delivery/
     plugin.json
     skills/develop-with-spec/   # spec, implementation, and video evidence
+  security-engineering/
+    plugin.json
+    skills/develop-securely/    # threat modeling, secure coding, and review
 .agents/plugins/marketplace.json       # Codex Git marketplace
 .claude-plugin/marketplace.json        # Claude Code Git marketplace
 bin/agent-toolkit.mjs           # user-facing CLI

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "security-engineering",
+  "version": "0.1.0",
+  "description": "Threat modeling, secure coding, and severity-classified security review for software and AI-agent changes, grounded in OWASP practice and current agentic-AI trust-boundary research. Auto-adapts its report between a technical findings report and a plain-language, actionable summary for non-technical vibe coders.",
+  "author": {
+    "name": "Agent Toolkit Contributors"
+  },
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "threat-modeling",
+    "secure-coding",
+    "code-review",
+    "agentic-ai",
+    "owasp",
+    "agent-skill",
+    "vibe-coding"
+  ]
+}

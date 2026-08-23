@@ -1,0 +1,9 @@
+{
+  "name": "security-engineering",
+  "version": "0.1.0",
+  "description": "Threat model, secure-code, and review software and AI-agent changes against OWASP and agentic-AI trust-boundary practices. Reports in plain language for non-technical vibe coders, or a technical findings report for engineers.",
+  "author": {
+    "name": "Agent Toolkit Contributors"
+  },
+  "license": "MIT"
+}

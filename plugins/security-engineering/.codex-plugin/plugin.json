@@ -1,0 +1,24 @@
+{
+  "name": "security-engineering",
+  "version": "0.1.0",
+  "description": "Threat model, secure-code, and review software and AI-agent changes against OWASP and agentic-AI trust-boundary practices. Reports in plain language for non-technical vibe coders, or a technical findings report for engineers.",
+  "author": {
+    "name": "Agent Toolkit Contributors"
+  },
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Security Engineering",
+    "shortDescription": "Threat model, secure-code, and review changes for security.",
+    "longDescription": "Run threat modeling, an OWASP-based secure coding checklist, and severity-classified security review across software and AI-agent changes, including agent/LLM-specific trust-boundary, prompt-injection, and tool-authorization risks.",
+    "developerName": "Agent Toolkit Contributors",
+    "category": "Security",
+    "capabilities": [
+      "Coding",
+      "Testing"
+    ],
+    "defaultPrompt": [
+      "Use develop-securely to threat model, secure-code, and review this change."
+    ]
+  }
+}
